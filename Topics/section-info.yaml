@@ -1,0 +1,16 @@
+content:
+- Standard logger
+- Multiple constructors
+- LinkedList vs. ArrayList
+- HashMap
+- Choosing the right collection
+- The utility class Collections
+- Iterator and Iterable
+- Timers
+- Callable and Future
+- Unit testing with JUnit
+- JUnit and Mockito
+- Test lifecycle annotations
+- Parameterized test
+- The Map interface
+- Array

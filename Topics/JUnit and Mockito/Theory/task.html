@@ -1,0 +1,142 @@
+<h2>JUnit and Mockito</h2>
+<html>
+ <head></head>
+ <body>
+  <h2>Java Unit Testing</h2> 
+  <p>Java is an object-oriented programming language. One of the central concepts of Java is class. Any Java program can be seen as a combination of classes that interact with each other via methods. In Java, class is considered to be a unit, and methods are subject to unit testing.</p> 
+  <p>Writing tests from scratch is a tedious task. Luckily, there are several unit testing frameworks that make this procedure easier. In this topic, we'll take a look at some of these frameworks.</p> 
+  <h2>JUnit</h2> 
+  <p><strong>JUnit</strong> is probably the most popular unit testing framework. It has a very active community that can answer your questions on forums. Let's consider the basic concepts of <strong>JUnit</strong>.</p> 
+  <p>First, you need to include the <strong>JUnit</strong> library in your project. If you are using <strong>maven</strong> or <strong>gradle</strong> build systems, take the following templates and replace <em>VERSION</em> with the actual library version of your repository:</p> 
+  <p><strong>maven</strong></p> 
+  <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;junit&lt;/groupId&gt;
+    &lt;artifactId&gt;junit&lt;/artifactId&gt;
+    &lt;version&gt;VERSION&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre> 
+  <p><strong>gradle</strong></p> 
+  <pre><code class="language-json">testCompile group: 'junit', name: 'junit', version: 'VERSION'</code></pre> 
+  <p> </p> 
+  <p>The method is interpreted as a test if it is tagged by <em>@Test</em> annotation:</p> 
+  <pre><code class="language-java">@Test
+public void testMethod() {
+    ...
+}</code></pre> 
+  <p>Usually, all unit tests of class methods are placed in a separate class. Build systems like <strong>maven</strong> or <strong>gradle</strong> include running unit tests at the end of the build process. It helps to detect bugs and fails the build if any of the unit tests fail.</p> 
+  <p>One of the distinctive features of unit testing is the <strong>isolation</strong> of each test. To achieve that and avoid code duplication, you can use <code class="language-xml">@Before</code><em>,</em> <code class="language-xml">@BeforeClass</code>, <code class="language-xml">@After</code>, and <code class="language-xml">@AfterClass</code> annotations.</p> 
+  <pre><code class="language-java">@BeforeClass
+public static void setUpClass() throws Exception {
+    // Code executed before the first test method
+}
+
+@Before
+public void setUp() throws Exception {
+    // Code executed before each test
+}
+
+@After
+public void tearDown() throws Exception {
+    // Code executed after each test 
+}
+ 
+@AfterClass
+public static void tearDownClass() throws Exception {
+    // Code executed after the last test method 
+}</code></pre> 
+  <p>JUnit uses special API named <strong>Assertions</strong> as acceptance criteria. It is a set of methods that checks if the resulting value matches the expected value and throws an error if not. Some commonly used methods are:</p> 
+  <ul> 
+   <li>assertEquals</li> 
+   <li>assertTrue</li> 
+   <li>assertNotNull</li> 
+  </ul> 
+  <p>Let's look at a simple example. Suppose we have a <code class="language-xml">Calculator</code> class which has two methods: <code class="language-xml">add</code><em> </em>and <code class="language-xml">subtract</code>.</p> 
+  <pre><code class="language-java">public class Calculator {
+
+    public int add(int x, int y) {
+        ...
+    }
+
+    public int subtract(int x, int y) {
+        ...
+    }
+}</code></pre> 
+  <p>Here are the test examples with <strong>JUnit:</strong></p> 
+  <pre><code class="language-java">import org.junit.Assert;
+
+public class CalculatorTest {
+    @Test
+    public void testAdd() {
+        Calculator calculator = new Calculator();
+        int result = calculator.add(2, 2);
+
+        Assert.assertEquals(4, result);
+    }
+
+    @Test
+    public void testSubtract() {
+        Calculator calculator = new Calculator();
+        int result = calculator.subtract(4, 2);
+
+        Assert.assertEquals(0, result);
+    }
+}</code></pre> 
+  <p>In case of a failed assertion, the statement throws an <code class="language-xml">AssertionError</code> with a short description.</p> 
+  <pre><code class="language-java">java.lang.AssertionError: 
+Expected :0
+Actual   :2</code></pre> 
+  <h2>Mockito</h2> 
+  <p>In complex classes, a unit test often needs to instantiate and configure a lot of objects. The set-up is time-consuming and the test may turn out to be more complicated than the tested code itself. In these cases, <strong>mockito</strong> framework is particularly useful. It allows you to create a special object known as <strong>mock</strong> and define its behavior during execution.</p> 
+  <p>To include <strong>mockito</strong> library into your project using <strong>maven</strong> or <strong>gradle</strong> build systems, use the following templates and replace <em>VERSION</em> with the actual library version of your repository:</p> 
+  <p><strong>maven</strong></p> 
+  <pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.mockito&lt;/groupId&gt;
+    &lt;artifactId&gt;mockito-core&lt;/artifactId&gt;
+    &lt;version&gt;VERSION&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre> 
+  <p><strong>gradle</strong></p> 
+  <pre><code class="language-json">testCompile group: 'org.mockito', name: 'mockito-core', version: 'VERSION'</code></pre> 
+  <p>Note that <em>mockito-all</em> is deprecated now.</p> 
+  <p>Let's consider an example. <code class="language-xml">UsdConverter</code> class is responsible for converting local currency to USD (United States dollar). The test should check the behavior of the tested unit in isolation from its dependencies. As the exchange rate varies with time, <code class="language-xml">UsdConverter</code> uses <code class="language-xml">ExchangeRateService</code> to get the latest updates. Moreover, <code class="language-xml">getUsd</code> method of a live <code class="language-xml">ExchangeRateService</code> can send a request over <strong>HTTP</strong> to get the actual exchange rate, which is difficult to reproduce in the test environment. <strong>Mockito</strong> allows us to avoid those difficulties and provides an API for creating empty objects and managing behavior. </p> 
+  <p>Note: here we use <code class="language-xml">BigDecimal</code> since financial transactions need high accuracy:</p> 
+  <pre><code class="language-java">public class UsdConverter {
+
+    private ExchangeRateService service;
+
+    public UsdConverter(ExchangeRateService service) {
+        this.service = service;
+    }
+
+    public BigDecimal convertToUsd(BigDecimal converted) {
+        return converted.multiply(service.getUsd());
+    }
+}</code></pre> 
+  <p>Using <strong>mockito</strong>, we create a mock of <code class="language-xml">ExchangeRateService</code> object and define its behavior in case of <code class="language-xml">getUsd</code> method invocation:</p> 
+  <pre><code class="language-java">import org.junit.Assert;
+import org.mockito.Mock;
+
+public class UsdConverterTest {
+
+    @Mock
+    private ExchangeRateService service = Mockito.mock(ExchangeRateService.class);
+
+    private UsdConverter converter = new UsdConverter(service);
+
+    @Test
+    public void testConvertToUsd() {
+        Mockito.when(service.getUsd()).thenReturn(BigDecimal.valueOf(5));
+
+        BigDecimal result = converter.convertToUsd(BigDecimal.valueOf(2));
+        BigDecimal expected = BigDecimal.valueOf(10);
+
+        Assert.assertEquals(expected, result);
+    }
+}</code></pre> 
+  <p>You can also throw an exception on a method call to test error handling. Another useful feature is checking that the method was invoked inside the tested method.</p> 
+  <p>We have covered some of the most common <strong>mockito</strong> features; the <a target="_blank" href="https://site.mockito.org/" rel="noopener noreferrer nofollow">full list of features</a> is much wider than that.</p> 
+  <h2>Conclusion</h2> 
+  <p>Usually, Java class is considered to be a unit, hence methods are subject to testing. Java community can offer a wide variety of tools to make unit testing easier; we have covered the two most common. <strong>JUnit</strong> framework allows you to prepare and clear the context of tests by annotations and provides API for checking acceptance criteria. <strong>Mockito</strong> framework helps with code isolation if you're testing complex classes and helps manage dependencies.</p>
+ </body>
+</html>
+<a href="https://hyperskill.org/learn/step/7591">Show topic summary</a>
